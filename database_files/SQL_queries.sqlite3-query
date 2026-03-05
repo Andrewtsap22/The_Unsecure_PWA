@@ -13,3 +13,7 @@
 -- INSERT INTO feedback(feedback) VALUES ("Tempe High School Students WERE HERE!");
 
 -- DELETE FROM feedback WHERE id > 12;
+
+--You need to force:
+SELECT * FROM users WHERE username = '{user entered username}' AND password = '{user entered password}';
+SELECT * FROM users WHERE username = '105' OR 1=1 AND password = '105' OR 1=1;
