@@ -1,23 +1,22 @@
+import os
+
 from flask import Flask
 from flask import render_template
 from flask import request
-from flask import redirect
-from flask_cors import CORS
+from flask_wtf.csrf import CSRFProtect
+
 import user_management as dbHandler
 
 # Code snippet for logging a message
 # app.logger.critical("message")
 
 app = Flask(__name__)
-# Enable CORS to allow cross-origin requests (needed for CSRF demo in Codespaces)
-CORS(app)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+CSRFProtect(app)
 
 
-@app.route("/success.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+@app.route("/success.html", methods=["POST", "GET"])
 def addFeedback():
-    if request.method == "GET" and request.args.get("url"):
-        url = request.args.get("url", "")
-        return redirect(url, code=302)
     if request.method == "POST":
         feedback = request.form["feedback"]
         dbHandler.insertFeedback(feedback)
@@ -28,11 +27,8 @@ def addFeedback():
         return render_template("/success.html", state=True, value="Back")
 
 
-@app.route("/signup.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+@app.route("/signup.html", methods=["POST", "GET"])
 def signup():
-    if request.method == "GET" and request.args.get("url"):
-        url = request.args.get("url", "")
-        return redirect(url, code=302)
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -43,15 +39,10 @@ def signup():
         return render_template("/signup.html")
 
 
-@app.route("/index.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+@app.route("/index.html", methods=["POST", "GET"])
 @app.route("/", methods=["POST", "GET"])
 def home():
-    # Simple Dynamic menu
-    if request.method == "GET" and request.args.get("url"):
-        url = request.args.get("url", "")
-        return redirect(url, code=302)
-    # Pass message to front end
-    elif request.method == "GET":
+    if request.method == "GET":
         msg = request.args.get("msg", "")
         return render_template("/index.html", msg=msg)
     elif request.method == "POST":
